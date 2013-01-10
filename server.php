@@ -112,7 +112,8 @@ class SonosService {
           array(
             'itemType' => 'playlist',
             'id' => 'stream',
-            'title' => 'Stream'
+            'title' => 'Stream',
+            'canPlay' => true
           ),
           array(
             'itemType' => 'container',
@@ -124,8 +125,9 @@ class SonosService {
         break;
       case 'stream':
         try {
+
           $options = array(
-            'limit' => $params->count
+            'limit' => min($params->count, 100) // Sonos sometimes returns `2147483647` here which causes a 500 in the SoundCloud API
           );
           $stream = json_decode($this->soundcloud->get('me/activities/tracks/affiliated', $options), true);
           $stream = $stream['collection'];
