@@ -136,7 +136,7 @@ class SonosService {
         $result->mediaMetadata = array();
 
         foreach ($stream as $item) {
-          $track = $item['origin'];
+          $track = ($item['type'] === 'track-sharing') ? $item['origin']['track'] : $item['origin'];
           array_push($result->mediaMetadata, $this->trackToMediaMetadata($track));
         }
 
