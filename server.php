@@ -3,7 +3,7 @@
 include 'lib/Soundcloud.php';
 include 'lib/log.php';
 
-logMsg('-------------------REQUEST START---------------------');
+// logMsg('-------------------REQUEST START---------------------');
 
 class SonosService {
 
@@ -42,8 +42,8 @@ class SonosService {
    * @access public
    */
   public function credentials($params) {
-    logMsg('credentials');
-    logMsg($params);
+    // logMsg('credentials');
+    // logMsg($params);
 
     if (isset($params->sessionId)) {
       $this->sessionId = $params->sessionId;
@@ -82,7 +82,7 @@ class SonosService {
     $result = array(
       'getSessionIdResult' => $response['access_token']
     );
-    logMsg($result);
+    // logMsg($result);
     return $result;
   }
 
@@ -100,8 +100,8 @@ class SonosService {
    * @see http://musicpartners.sonos.com/node/83
    */
   public function getMetadata($params) {
-    logMsg('getMetadata');
-    logMsg($params);
+    // logMsg('getMetadata');
+    // logMsg($params);
 
     $result = new StdClass();
 
@@ -144,7 +144,7 @@ class SonosService {
         $result->count = $result->total = count($result->mediaMetadata);
         break;
     }
-    logMsg($result);
+    // logMsg($result);
     return array('getMetadataResult' => $result);
   }
 
@@ -159,8 +159,8 @@ class SonosService {
    * @see http://musicpartners.sonos.com/node/84
    */
   public function getMediaMetadata($params) {
-    logMsg('getMediaMetadata');
-    logMsg($params);
+    // logMsg('getMediaMetadata');
+    // logMsg($params);
 
     try {
       $track = json_decode($this->soundcloud->get('tracks/' . $params->id), true);
@@ -182,8 +182,8 @@ class SonosService {
    * @see http://musicpartners.sonos.com/node/85
    */
   public function getMediaURI($params) {
-    logMsg('getMediaURI');
-    logMsg($params);
+    // logMsg('getMediaURI');
+    // logMsg($params);
 
     try {
       $track = json_decode($this->soundcloud->get('tracks/' . $params->id), true);
@@ -193,7 +193,7 @@ class SonosService {
     } catch (Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
       logMsg($e->getMessage());
     }
-    logMsg($url);
+    // logMsg($url);
     return array('getMediaURIResult' => $url);
   }
 
@@ -217,13 +217,13 @@ class SonosService {
   }
 
   public function getExtendedMetadata($params) {
-    logMsg('getExtendedMetadata');
-    logMsg($params);
+    // logMsg('getExtendedMetadata');
+    // logMsg($params);
   }
 
   public function getExtendedMetadataText($params) {
-    logMsg('getExtendedMetadataText');
-    logMsg($params);
+    // logMsg('getExtendedMetadataText');
+    // logMsg($params);
   }
 
   /**
@@ -289,7 +289,8 @@ class SonosService {
     return array(
       'artist'      => substr($track['user']['username'], 0, 63),
       'albumArtURI' => $track['artwork_url'],
-      'genre'       => $track['genre'],
+      // 'genre'       => $track['genre'],
+      'genre'       => '',
       'duration'    => ceil($track['duration']/1000)
     );
   }
