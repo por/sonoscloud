@@ -3,6 +3,8 @@
 include 'lib/Soundcloud.php';
 include 'lib/log.php';
 
+define('BASE_PATH', rtrim("http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']), '/'));
+
 // logMsg('-------------------REQUEST START---------------------');
 
 class SonosService {
@@ -283,9 +285,11 @@ class SonosService {
   }
 
   private function trackToTrackMetadata($track) {
-    if (!isset($track['artwork_url'])) {
-      // TODO set default artwork
-      $track['artwork_url']  = '';
+
+    if ($track['artwork_url'] === NULL) {
+      $track['artwork_url'] = ($track['user']['avatar_url'] !== NULL)
+                                ? $track['user']['avatar_url']
+                                : BASE_PATH . '/assets/images/sound.png';
     }
 
     return array(
