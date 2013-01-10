@@ -1,3 +1,4 @@
 # SonosCloud
 
-Sonos SoundCloud integration.
+![](http://scr.timbormans.com/81lfo703gsw8.png)
+
