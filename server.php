@@ -220,9 +220,31 @@ class SonosService {
     return array('getLastUpdateResult' => $result );
   }
 
+
+  /**
+   * getExtendedMetadata request
+   *
+   * @param  object $params
+   * @param  string $params->id Unique id of the item
+   *
+   * @access public
+   * @see http://musicpartners.sonos.com/node/127
+   */
   public function getExtendedMetadata($params) {
     // logMsg('getExtendedMetadata');
     // logMsg($params);
+
+    // TODO investigate what other metadata options are available to show here
+    try {
+      $track = json_decode($this->soundcloud->get('tracks/' . $params->id), true);
+    } catch (Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
+      logMsg($e->getMessage());
+    }
+
+    return array('getExtendedMetadataResult' => array(
+      'mediaMetadata' => $this->trackToMediaMetadata($track)
+    ));
+
   }
 
   public function getExtendedMetadataText($params) {
@@ -312,10 +334,8 @@ $server->setClass('SonosService');
 // Initialize request
 try {
   $server->handle();
-
 } catch (Exception $e) {
   // handle error
-
 }
 
 ?>
