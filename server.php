@@ -314,6 +314,9 @@ class SonosService {
                                 : BASE_PATH . '/assets/images/sound.png';
     }
 
+    // change to higher resolution image
+    $track['artwork_url'] = str_replace('large.jpg', 't200x200.jpg', $track['artwork_url']);
+
     return array(
       'artist'      => substr($track['user']['username'], 0, 63),
       'albumArtURI' => $track['artwork_url'],
