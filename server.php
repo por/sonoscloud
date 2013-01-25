@@ -102,8 +102,8 @@ class SonosService {
    * @see http://musicpartners.sonos.com/node/83
    */
   public function getMetadata($params) {
-    // logMsg('getMetadata');
-    // logMsg($params);
+    logMsg('getMetadata');
+    logMsg($params);
 
     $result = new StdClass();
 
@@ -123,6 +123,18 @@ class SonosService {
             'title' => 'You'
           )
         );
+        $result->count = $result->total = count($result->mediaCollection);
+        break;
+      case 'search':
+        $result->index = 0;
+        $result->mediaCollection = array(
+          array(
+            'id' => 'search_tracks',
+            'title' => 'Sounds',
+            'itemType' => 'search'
+          )
+        );
+
         $result->count = $result->total = count($result->mediaCollection);
         break;
       case 'stream':
@@ -275,26 +287,28 @@ class SonosService {
    */
   public function search($params) {
 
-    logMsg('search');
-    logMsg($params);
+    // logMsg('search');
+    // logMsg($params);
 
     $result = new StdClass();
-
-    try {
-      $tracks = json_decode($this->soundcloud->get('tracks', array('q' => $params->term, 'limit'=> $params->count)), true);
-    } catch (Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
-      logMsg($e->getMessage());
-    }
-
     $result->index = 0;
-    $result->mediaMetadata = array();
 
-    foreach ($tracks as $track) {
-      $track = $item['origin'];
-      array_push($result->mediaMetadata, $this->trackToMediaMetadata($track));
+    switch ($params->id) {
+      case 'search_tracks':
+        try {
+          $tracks = json_decode($this->soundcloud->get('tracks', array('q' => $params->term, 'limit'=> $params->count)), true);
+        } catch (Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
+          logMsg($e->getMessage());
+        }
+        $result->mediaMetadata = array();
+
+        foreach ($tracks as $track) {
+          array_push($result->mediaMetadata, $this->trackToMediaMetadata($track));
+        }
+
+        $result->count = $result->total = count($result->mediaMetadata);
+        break;
     }
-
-    $result->count = $result->total = count($result->mediaMetadata);
 
     return array('searchResult' => $result);
   }
