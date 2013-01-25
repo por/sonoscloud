@@ -131,7 +131,7 @@ class SonosService {
           $options = array(
             'limit' => min($params->count, 100) // Sonos sometimes returns `2147483647` here which causes a 500 in the SoundCloud API
           );
-          $stream = json_decode($this->soundcloud->get('me/activities/tracks/affiliated', $options), true);
+          $stream = json_decode($this->soundcloud->get('e1/me/stream', $options), true);
           $stream = $stream['collection'];
         } catch (Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
           logMsg($e->getMessage());
@@ -140,8 +140,16 @@ class SonosService {
         $result->mediaMetadata = array();
 
         foreach ($stream as $item) {
-          $track = ($item['type'] === 'track-sharing') ? $item['origin']['track'] : $item['origin'];
-          array_push($result->mediaMetadata, $this->trackToMediaMetadata($track));
+          $isTrack = $item['type'] === 'track';
+          $isTrackRepost = $item['type'] === 'track-repost';
+
+          if ($isTrack || $isTrackRepost) {
+            $track = $item['track'];
+            $reposter = $isTrackRepost ? $item['user'] : null;
+
+            array_push($result->mediaMetadata, $this->trackToMediaMetadata($track, $reposter));
+
+          }
         }
 
         // TODO make pagination work with next_href
@@ -295,18 +303,18 @@ class SonosService {
    * PRIVATE FUNCTIONS
    * ----------------------------------------- */
 
-  private function trackToMediaMetadata($track) {
+  private function trackToMediaMetadata($track, $reposter = null) {
 
     return array(
       'itemType'      => 'track',
       'id'            => (string)$track['id'],
       'title'         => substr($track['title'], 0, 63),
       'mimeType'      => 'audio/mp3',
-      'trackMetadata' => $this->trackToTrackMetadata($track)
+      'trackMetadata' => $this->trackToTrackMetadata($track, $reposter)
     );
   }
 
-  private function trackToTrackMetadata($track) {
+  private function trackToTrackMetadata($track, $reposter = null) {
 
     if ($track['artwork_url'] === NULL) {
       $track['artwork_url'] = ($track['user']['avatar_url'] !== NULL)
@@ -318,8 +326,9 @@ class SonosService {
     $track['artwork_url'] = str_replace('large.jpg', 't200x200.jpg', $track['artwork_url']);
 
     return array(
-      'artist'      => substr($track['user']['username'], 0, 63),
+      'artist'      => substr($track['user']['username'] . ($reposter ? ' (reposted by ' . $reposter['username'] . ')' : '') , 0, 63),
       'albumArtURI' => $track['artwork_url'],
+      'albumArtist' => 'test',
       // 'genre'       => $track['genre'],
       'genre'       => '',
       'duration'    => ceil($track['duration']/1000)
