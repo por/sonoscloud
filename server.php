@@ -328,9 +328,6 @@ class SonosService {
     return array(
       'artist'      => substr($track['user']['username'] . ($reposter ? ' (reposted by ' . $reposter['username'] . ')' : '') , 0, 63),
       'albumArtURI' => $track['artwork_url'],
-      'albumArtist' => 'test',
-      // 'genre'       => $track['genre'],
-      'genre'       => '',
       'duration'    => ceil($track['duration']/1000)
     );
   }
