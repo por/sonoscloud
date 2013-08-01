@@ -163,8 +163,59 @@ class SonosService {
 
           }
         }
-
         // TODO make pagination work with next_href
+        $result->count = $result->total = count($result->mediaMetadata);
+        break;
+      case 'you':
+        $result->index = 0;
+        $result->mediaCollection = array(
+          array(
+            'itemType' => 'playlist',
+            'id' => 'likes',
+            'title' => 'Likes',
+            'canPlay' => true
+          ),
+          array(
+            'itemType' => 'playlist',
+            'id' => 'sounds',
+            'title' => 'Sounds',
+            'canPlay' => true
+          )
+        );
+        $result->count = $result->total = count($result->mediaCollection);
+        break;
+      case 'likes':
+        try {
+          $options = array(
+            'limit' => min($params->count, 100)
+          );
+          $likes = json_decode($this->soundcloud->get('me/favorites', $options), true);
+        } catch(Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
+          logMsg($e->getMessage());
+        }
+        $result->index = 0;
+        $result->mediaMetadata = array();
+
+        foreach ($likes as $item) {
+          array_push($result->mediaMetadata, $this->trackToMediaMetadata($item));
+        }
+        $result->count = $result->total = count($result->mediaMetadata);
+        break;
+      case 'sounds':
+        try {
+          $options = array(
+            'limit' => min($params->count, 100)
+          );
+          $likes = json_decode($this->soundcloud->get('me/tracks', $options), true);
+        } catch(Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
+          logMsg($e->getMessage());
+        }
+        $result->index = 0;
+        $result->mediaMetadata = array();
+
+        foreach ($likes as $item) {
+          array_push($result->mediaMetadata, $this->trackToMediaMetadata($item));
+        }
         $result->count = $result->total = count($result->mediaMetadata);
         break;
     }
