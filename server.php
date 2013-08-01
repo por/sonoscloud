@@ -122,6 +122,12 @@ class SonosService {
             'id' => 'you',
             'title' => 'You'
           )
+          //,
+          // array(
+          //   'itemType' => 'container',
+          //   'id' => 'explore',
+          //   'title' => 'Explore'
+          // )
         );
         $result->count = $result->total = count($result->mediaCollection);
         break;
@@ -217,6 +223,28 @@ class SonosService {
           array_push($result->mediaMetadata, $this->trackToMediaMetadata($item));
         }
         $result->count = $result->total = count($result->mediaMetadata);
+        break;
+      case 'explore':
+        try {
+          $options = array(
+            'limit' => 10
+          );
+          $categories = json_decode($this->soundcloud->get('explore/sounds/category', $options), true);
+          $categories = $categories['collection'];
+        } catch(Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
+          logMsg($e->getMessage());
+        }
+        $result->index = 0;
+        $result->mediaCollection = array();
+
+        foreach ($categories as $category) {
+          array_push($result->mediaCollection, array(
+            'itemType' => 'container',
+            'id' => 'explore::' . $category['permalink'],
+            'title' => $category['name']
+          ));
+        }
+        $result->count = $result->total = count($result->mediaCollection);
         break;
     }
     // logMsg($result);
