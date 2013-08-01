@@ -290,9 +290,7 @@ class SonosService {
 
     try {
       $track = json_decode($this->soundcloud->get('tracks/' . $params->id), true);
-      $url = $track['stream_url'] . '?client_id=414b47389d9116fd4d1daca6bea4476a&oauth_token=' . $this->sessionId;
-      $headers = get_headers($url, 1);
-      $url = $headers['Location'];
+      $url = $track['stream_url'] . '?client_id=414b47389d9116fd4d1daca6bea4476a';
     } catch (Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
       logMsg($e->getMessage());
     }
