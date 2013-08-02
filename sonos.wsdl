@@ -889,7 +889,7 @@ to publish the underlying code.
 
   <wsdl:service name="Sonos">
      <wsdl:port name="SonosSoap" binding="tns:SonosSoap">
-        <soap:address location="http://localhost/soundcloud/sonos/server.php"/>
+        <soap:address location="http://sonoscloud.herokuapp.com/index.php"/>
      </wsdl:port>
   </wsdl:service>
 
