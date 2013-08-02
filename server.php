@@ -107,27 +107,28 @@ class SonosService {
 
     $result = new StdClass();
 
-    switch ($params->id) {
+    $params->id = explode('::', $params->id);
+
+    switch ($params->id[0]) {
       case 'root':
         $result->index = 0;
         $result->mediaCollection = array(
           array(
-            'itemType' => 'playlist',
             'id' => 'stream',
             'title' => 'Stream',
+            'itemType' => 'playlist',
             'canPlay' => true
           ),
           array(
-            'itemType' => 'container',
             'id' => 'you',
-            'title' => 'You'
+            'title' => 'You',
+            'itemType' => 'container'
+          ),
+          array(
+            'id' => 'explore',
+            'title' => 'Explore',
+            'itemType' => 'container'
           )
-          //,
-          // array(
-          //   'itemType' => 'container',
-          //   'id' => 'explore',
-          //   'title' => 'Explore'
-          // )
         );
         $result->count = $result->total = count($result->mediaCollection);
         break;
@@ -225,26 +226,49 @@ class SonosService {
         $result->count = $result->total = count($result->mediaMetadata);
         break;
       case 'explore':
+        $exploreCategory = isset($params->id[1]) ? $params->id[1] : false;
+        $exploreSubcategory = isset($params->id[2]) ? $params->id[2] : false;
         try {
           $options = array(
             'limit' => 10
           );
-          $categories = json_decode($this->soundcloud->get('explore/sounds/category', $options), true);
+          $categories = json_decode($this->soundcloud->get('explore/sounds/category' . ($exploreCategory ? '/' . $exploreCategory : ''), $options), true);
           $categories = $categories['collection'];
         } catch(Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
           logMsg($e->getMessage());
         }
         $result->index = 0;
-        $result->mediaCollection = array();
 
-        foreach ($categories as $category) {
-          array_push($result->mediaCollection, array(
-            'itemType' => 'container',
-            'id' => 'explore::' . $category['permalink'],
-            'title' => $category['name']
-          ));
+        if ($exploreSubcategory) {
+          $result->mediaMetadata = array();
+          $trackIds = array();
+          foreach ($categories as $category) {
+            if ($category['permalink'] === $exploreSubcategory) {
+              foreach ($category['tracks'] as $track) {
+                array_push($trackIds, $track['id']);
+              }
+            }
+          }
+          $options = array(
+            'ids' => implode(',', $trackIds)
+          );
+          $tracks = json_decode($this->soundcloud->get('tracks', $options), true);
+          foreach ($tracks as $track) {
+            array_push($result->mediaMetadata, $this->trackToMediaMetadata($track));
+          }
+          $result->count = $result->total = count($result->mediaMetadata);
+        } else {
+          $result->mediaCollection = array();
+          foreach ($categories as $category) {
+            array_push($result->mediaCollection, array(
+              'itemType' => $exploreCategory ? 'playlist' : 'genre',
+              'id' => 'explore::' . ($exploreCategory ? $exploreCategory . '::' : '') . $category['permalink'],
+              'title' => $category['name']
+            ));
+          }
+          $result->count = $result->total = count($result->mediaCollection);
         }
-        $result->count = $result->total = count($result->mediaCollection);
+
         break;
     }
     // logMsg($result);
