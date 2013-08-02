@@ -1,7 +1,7 @@
 <?php
 
-include 'lib/soundcloud/Services/Soundcloud.php';
-include 'lib/log.php';
+include './lib/soundcloud/Services/Soundcloud.php';
+include './lib/log.php';
 
 define('BASE_PATH', rtrim("http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']), '/'));
 
