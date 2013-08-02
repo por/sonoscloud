@@ -16,6 +16,7 @@ Options -MultiViews
 </IfModule>
 
 # Block users from browsing folders without a default document
+
 <IfModule mod_autoindex.c>
   Options -Indexes
 </IfModule>
