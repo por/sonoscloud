@@ -182,7 +182,7 @@ class SonosService {
             'canPlay' => true
           ),
           array(
-            'itemType' => 'playlist',
+            'itemType' => 'artistTrackList',
             'id' => 'sounds',
             'title' => 'Sounds',
             'canPlay' => true
