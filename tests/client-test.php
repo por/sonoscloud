@@ -3,7 +3,7 @@
 class SonosService_Test extends PHPUnit_Framework_TestCase {
 
   private $client;
-  private $wsdl = "http://sonoscloud.herokuapp.com/index.php?wsdl";
+  private $wsdl = "http://localhost/soundcloud/sonos/index.php?wsdl";
 
   public function SonosService_Test() {
     // Start client
