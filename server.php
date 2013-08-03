@@ -263,7 +263,8 @@ class SonosService {
             array_push($result->mediaCollection, array(
               'itemType' => $exploreCategory ? 'playlist' : 'genre',
               'id' => 'explore::' . ($exploreCategory ? $exploreCategory . '::' : '') . $category['permalink'],
-              'title' => $category['name']
+              'title' => $category['name'],
+              'canPlay' => isset($exploreCategory) ? true : false
             ));
           }
           $result->count = $result->total = count($result->mediaCollection);
